@@ -434,6 +434,7 @@ class MerchantController {
       console.log('酒店创建成功，ID:', hotelId);
 
       if (req.files && req.files.length > 0) {
+        console.log('上传的文件:', req.files);
         const uploadPromises = req.files.map(async (file, index) => {
           const imageType = index === 0 ? 'main' : 'other';
           const result = await uploadFile(file, 'hotels');
@@ -476,6 +477,71 @@ class MerchantController {
     } catch (error) {
       console.error('创建酒店失败:', error);
       res.error('创建酒店失败', 500);
+    }
+  }
+
+  static async createRoomWithUpload(req, res) {
+    try {
+      const hotelId = req.params.hotelId;
+      const merchantId = req.user.id;
+      const { type, area, bedType, maxOccupancy, price, totalRooms, amenities } = req.body;
+
+      const hotel = await Hotel.findById(hotelId);
+      if (!hotel) {
+        return res.error('酒店不存在', 404);
+      }
+
+      if (hotel.merchant_id !== merchantId) {
+        return res.error('无权为此酒店添加房型', 403);
+      }
+
+      if (!type || !maxOccupancy || !price || !totalRooms) {
+        return res.error('房型、最大入住人数、价格和房间总数不能为空');
+      }
+
+      // 处理上传的图片
+      const images = [];
+      if (req.files && req.files.length > 0) {
+        const uploadPromises = req.files.map(async (file, index) => {
+          const result = await uploadFile(file, 'rooms');
+          images.push(result.url);
+          return result;
+        });
+        await Promise.all(uploadPromises);
+      }
+
+      const roomId = await Room.create({
+        hotel_id: hotelId,
+        type,
+        area,
+        bed_type: bedType,
+        max_occupancy: maxOccupancy,
+        price,
+        total_rooms: totalRooms,
+        available_rooms: totalRooms,
+        images: images,
+        amenities: amenities || []
+      });
+
+      const room = await Room.findById(roomId);
+      res.success({
+        id: room.id,
+        hotelId: room.hotel_id,
+        type: room.type,
+        area: room.area,
+        bedType: room.bed_type,
+        maxOccupancy: room.max_occupancy,
+        price: room.price,
+        totalRooms: room.total_rooms,
+        available: room.available_rooms,
+        images: room.images,
+        amenities: room.amenities,
+        createdAt: room.created_at,
+        updatedAt: room.updated_at
+      }, '创建成功', 201);
+    } catch (error) {
+      console.error('创建房型失败:', error);
+      res.error('创建房型失败', 500);
     }
   }
 }

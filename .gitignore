@@ -121,3 +121,4 @@ temp/
 # Build outputs
 dist/
 build/
+NEW_API_DOCS.md
