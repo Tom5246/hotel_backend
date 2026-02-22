@@ -19,6 +19,7 @@ const merchantRoutes = require('./routes/merchantRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
 const tagGuestRoutes = require('./routes/tagGuestRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 app.use('/api', authRoutes);
 app.use('/api', publicHotelRoutes);
@@ -26,6 +27,7 @@ app.use('/api', merchantRoutes);
 app.use('/api', adminRoutes);
 app.use('/api', reservationRoutes);
 app.use('/api', tagGuestRoutes);
+app.use('/api', uploadRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

@@ -2,8 +2,12 @@ const express = require('express');
 const router = express.Router();
 const MerchantController = require('../controllers/MerchantController');
 const { authMiddleware, roleMiddleware } = require('../middleware/auth');
+const multer = require('multer');
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 router.post('/merchant/hotels', authMiddleware, roleMiddleware(['merchant']), MerchantController.createHotel);
+router.post('/merchant/hotels/upload', authMiddleware, roleMiddleware(['merchant']), upload.array('files', 10), MerchantController.createHotelWithUpload);
 router.get('/merchant/hotels', authMiddleware, roleMiddleware(['merchant']), MerchantController.getMerchantHotels);
 router.get('/merchant/hotels/:hotelId', authMiddleware, roleMiddleware(['merchant']), MerchantController.getMerchantHotel);
 router.put('/merchant/hotels/:hotelId', authMiddleware, roleMiddleware(['merchant']), MerchantController.updateHotel);

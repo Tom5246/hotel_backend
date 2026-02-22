@@ -3,6 +3,7 @@ const Room = require('../models/Room');
 const HotelImage = require('../models/HotelImage');
 const Tag = require('../models/Tag');
 const Facility = require('../models/Facility');
+const { uploadFile } = require('../config/oss');
 
 class MerchantController {
   static async createHotel(req, res) {
@@ -405,6 +406,76 @@ class MerchantController {
     } catch (error) {
       console.error('获取房型列表失败:', error);
       res.error('获取房型列表失败', 500);
+    }
+  }
+
+  static async createHotelWithUpload(req, res) {
+    try {
+      const { name, address, description, star, openingDate, facilityIds, tagIds } = req.body;
+      const merchantId = req.user.id;
+
+      if (!name || !address) {
+        return res.error('酒店名称和地址不能为空');
+      }
+
+      const completedOpeningDate = MerchantController.completeOpeningDate(openingDate);
+
+      const hotelId = await Hotel.create({
+        merchant_id: merchantId,
+        name,
+        address,
+        description,
+        star,
+        rating: 0.0,
+        opening_date: completedOpeningDate,
+        status: 'pending'
+      });
+
+      console.log('酒店创建成功，ID:', hotelId);
+
+      if (req.files && req.files.length > 0) {
+        const uploadPromises = req.files.map(async (file, index) => {
+          const imageType = index === 0 ? 'main' : 'other';
+          const result = await uploadFile(file, 'hotels');
+          
+          console.log(`图片上传成功: ${result.url}, 类型: ${imageType}, 排序: ${index}`);
+          
+          const imageId = await HotelImage.create({
+            hotel_id: hotelId,
+            url: result.url,
+            type: imageType,
+            sort_order: index
+          });
+          
+          console.log(`图片已存储到数据库，ID: ${imageId}, URL: ${result.url}`);
+          
+          return result;
+        });
+        
+        await Promise.all(uploadPromises);
+      }
+
+      if (facilityIds && facilityIds.length > 0) {
+        for (const facilityId of facilityIds) {
+          await Facility.addFacilityToHotel(hotelId, facilityId);
+        }
+      }
+
+      if (tagIds && tagIds.length > 0) {
+        for (const tagId of tagIds) {
+          await Tag.addTagToHotel(hotelId, tagId);
+        }
+      }
+
+      const hotel = await Hotel.findById(hotelId);
+      res.success({
+        id: hotel.id,
+        status: hotel.status,
+        createdAt: hotel.created_at
+      }, '创建成功', 201);
+    } catch (error) {
+      console.error('创建酒店失败:', error);
+      res.error('创建酒店失败', 500);
     }
   }
 }
