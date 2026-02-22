@@ -11,12 +11,12 @@ class Hotel {
   }
 
   static async findById(id) {
-    const [rows] = await pool.query('SELECT * FROM hotels WHERE id = ?', [id]);
+    const [rows] = await pool.query('SELECT * FROM hotels WHERE id = ? AND is_deleted = 0', [id]);
     return rows[0];
   }
 
   static async findByMerchantId(merchantId, filters = {}) {
-    let query = 'SELECT * FROM hotels WHERE merchant_id = ?';
+    let query = 'SELECT * FROM hotels WHERE merchant_id = ? AND is_deleted = 0';
     const params = [merchantId];
 
     if (filters.status) {
@@ -46,7 +46,7 @@ class Hotel {
              (SELECT MIN(r.price) FROM rooms r WHERE r.hotel_id = h.id) as price,
              (SELECT url FROM hotel_images hi WHERE hi.hotel_id = h.id AND hi.type = 'main' LIMIT 1) as image
       FROM hotels h 
-      WHERE h.status = 'published'
+      WHERE h.status = 'published' AND h.is_deleted = 0
     `;
     const params = [];
 
@@ -140,7 +140,7 @@ class Hotel {
              (SELECT COUNT(*) FROM rooms WHERE hotel_id = h.id) as room_count
       FROM hotels h
       LEFT JOIN users u ON h.merchant_id = u.id
-      WHERE h.id = ?
+      WHERE h.id = ? AND h.is_deleted = 0
     `;
     const params = [hotelId];
 
@@ -225,7 +225,7 @@ class Hotel {
   }
 
   static async delete(id) {
-    const [result] = await pool.query('DELETE FROM hotels WHERE id = ?', [id]);
+    const [result] = await pool.query('UPDATE hotels SET is_deleted = 1 WHERE id = ?', [id]);
     return result.affectedRows > 0;
   }
 
@@ -270,7 +270,7 @@ class Hotel {
              (SELECT url FROM hotel_images WHERE hotel_id = h.id AND type = 'main' LIMIT 1) as cover_image
       FROM hotels h
       LEFT JOIN users u ON h.merchant_id = u.id
-      WHERE 1=1
+      WHERE h.is_deleted = 0
     `;
     const params = [];
     // console.log(filters);

@@ -81,7 +81,7 @@ class MerchantController {
   static async getMerchantHotels(req, res) {
     try {
       const merchantId = req.user.id;
-      const { status, page, pageSize } = req.query;
+      const { status, page, pageSize } = req.body;
 
       const filters = {};
       if (status) filters.status = status;
