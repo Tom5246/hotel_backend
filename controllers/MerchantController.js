@@ -381,7 +381,7 @@ class MerchantController {
     try {
       const hotelId = req.params.hotelId;
       const merchantId = req.user.id;
-      const { page, pageSize } = req.query;
+      const { page, pageSize } = req.body;
 
       const hotel = await Hotel.findById(hotelId);
       if (!hotel) {

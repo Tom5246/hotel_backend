@@ -3,7 +3,7 @@ const Hotel = require('../models/Hotel');
 class AdminController {
   static async getPendingHotels(req, res) {
     try {
-      const { page, pageSize } = req.query;
+      const { page, pageSize } = req.body;
 
       const filters = {};
       if (page) filters.page = parseInt(page);

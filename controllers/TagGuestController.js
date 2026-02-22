@@ -67,7 +67,7 @@ class TagGuestController {
   static async getGuests(req, res) {
     try {
       const userId = req.user.id;
-      const { page, pageSize } = req.query;
+      const { page, pageSize } = req.body;
 
       const filters = {};
       if (page) filters.page = parseInt(page);

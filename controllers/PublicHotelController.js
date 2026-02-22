@@ -46,7 +46,7 @@ class PublicHotelController {
   static async getHotelDetail(req, res) {
     try {
       const hotelId = req.params.hotelId;
-      const { checkIn, checkOut } = req.query;
+      const { checkIn, checkOut } = req.body;
 
       const hotel = await Hotel.getHotelWithDetails(hotelId, checkIn, checkOut);
 
@@ -76,7 +76,7 @@ class PublicHotelController {
   static async getPriceCalendar(req, res) {
     try {
       const hotelId = req.params.hotelId;
-      const { yearMonth } = req.query;
+      const { yearMonth } = req.body;
 
       const result = await Hotel.getPriceCalendar(hotelId, yearMonth);
       res.success(result);

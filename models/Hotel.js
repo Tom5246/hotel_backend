@@ -1,6 +1,35 @@
 const { pool } = require('../config/db');
 
 class Hotel {
+  static safeParseJSON(jsonString) {
+    try {
+      if (!jsonString) {
+        return [];
+      }
+      
+      if (Array.isArray(jsonString)) {
+        return jsonString;
+      }
+      
+      if (typeof jsonString !== 'string') {
+        return [];
+      }
+      
+      if (jsonString === 'null' || jsonString.trim() === '') {
+        return [];
+      }
+      
+      const parsed = JSON.parse(jsonString);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('JSON解析失败:', error.message, '原始数据:', jsonString);
+      return [];
+    }
+  }
   static async create(hotelData) {
     const { merchant_id, name, address, description, star, rating, opening_date, status, audit_comment } = hotelData;
     const [result] = await pool.query(
@@ -186,8 +215,8 @@ class Hotel {
       price: room.price,
       totalRooms: room.total_rooms,
       available: room.available_rooms,
-      images: JSON.parse(room.images || '[]'),
-      amenities: JSON.parse(room.amenities || '[]')
+      images: Hotel.safeParseJSON(room.images || '[]'),
+      amenities: Hotel.safeParseJSON(room.amenities || '[]')
     }));
 
     return hotel;

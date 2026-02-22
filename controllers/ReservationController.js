@@ -60,7 +60,7 @@ class ReservationController {
   static async getUserReservations(req, res) {
     try {
       const userId = req.user.id;
-      const { status } = req.query;
+      const { status } = req.body;
 
       const filters = {};
       if (status) filters.status = status;
