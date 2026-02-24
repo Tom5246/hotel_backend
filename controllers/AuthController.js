@@ -5,7 +5,7 @@ const { generateToken } = require('../middleware/auth');
 class AuthController {
   static async register(req, res) {
     try {
-      const { username, password, email, phone, role } = req.body;
+      const { username, password, email, phone, role } = req.body || {};
 
       if (!username || !password) {
         return res.error('用户名和密码不能为空');
@@ -55,7 +55,7 @@ class AuthController {
 
   static async login(req, res) {
     try {
-      const { username, password } = req.body;
+      const { username, password } = req.body || {};
 
       if (!username || !password) {
         return res.error('用户名和密码不能为空');

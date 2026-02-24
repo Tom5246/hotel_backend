@@ -3,7 +3,7 @@ const Hotel = require('../models/Hotel');
 class AdminController {
   static async getPendingHotels(req, res) {
     try {
-      const { page, pageSize } = req.body;
+      const { page, pageSize } = req.body || {};
 
       const filters = {};
       if (page) filters.page = parseInt(page);
@@ -34,7 +34,7 @@ class AdminController {
   static async auditHotel(req, res) {
     try {
       const hotelId = req.params.hotelId;
-      const { status, comment } = req.body;
+      const { status, comment } = req.body || {};
 
       if (!status || !['approved', 'rejected'].includes(status)) {
         return res.error('无效的审核状态');
@@ -69,7 +69,7 @@ class AdminController {
   static async publishHotel(req, res) {
     try {
       const hotelId = req.params.hotelId;
-      const { action } = req.body;
+      const { action } = req.body || {};
 
       if (!action || !['publish', 'unpublish'].includes(action)) {
         return res.error('无效的操作');
@@ -104,7 +104,7 @@ class AdminController {
 
   static async getAllHotels(req, res) {
     try {
-      const { status, merchantId, page, pageSize } = req.body;
+      const { status, merchantId, page, pageSize } = req.body || {};
       
       const filters = {};
       if (status) filters.status = status;

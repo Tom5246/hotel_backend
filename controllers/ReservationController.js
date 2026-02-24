@@ -4,7 +4,7 @@ const Room = require('../models/Room');
 class ReservationController {
   static async createReservation(req, res) {
     try {
-      const { hotelId, roomId, checkIn, checkOut, guests, contactName, contactPhone, specialRequests, promotionId } = req.body;
+      const { hotelId, roomId, checkIn, checkOut, guests, contactName, contactPhone, specialRequests, promotionId } = req.body || {};
       const userId = req.user.id;
 
       if (!hotelId || !roomId || !checkIn || !checkOut || !contactName || !contactPhone) {
@@ -60,7 +60,7 @@ class ReservationController {
   static async getUserReservations(req, res) {
     try {
       const userId = req.user.id;
-      const { status } = req.body;
+      const { status } = req.body || {};
 
       const filters = {};
       if (status) filters.status = status;
@@ -69,8 +69,8 @@ class ReservationController {
 
       const items = reservations.map(reservation => ({
         id: reservation.reservation_no,
-        hotelName: '',
-        roomType: '',
+        hotelName: reservation.hotel_name || '',
+        roomType: reservation.room_type || '',
         checkIn: reservation.check_in_date,
         checkOut: reservation.check_out_date,
         totalPrice: reservation.total_price,

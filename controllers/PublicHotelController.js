@@ -4,7 +4,7 @@ const Tag = require('../models/Tag');
 class PublicHotelController {
   static async searchHotels(req, res) {
     try {
-      const { city, keyword, checkIn, checkOut, star, priceMin, priceMax, tags, sort, page, pageSize } = req.body;
+      const { city, keyword, checkIn, checkOut, star, priceMin, priceMax, tags, sort, page, pageSize } = req.body || {};
       
       const filters = {};
       if (city) filters.city = city;
@@ -46,7 +46,7 @@ class PublicHotelController {
   static async getHotelDetail(req, res) {
     try {
       const hotelId = req.params.hotelId;
-      const { checkIn, checkOut } = req.body;
+      const { checkIn, checkOut } = req.body || {};
 
       const hotel = await Hotel.getHotelWithDetails(hotelId, checkIn, checkOut);
 
@@ -76,7 +76,7 @@ class PublicHotelController {
   static async getPriceCalendar(req, res) {
     try {
       const hotelId = req.params.hotelId;
-      const { yearMonth } = req.body;
+      const { yearMonth } = req.body || {};
 
       const result = await Hotel.getPriceCalendar(hotelId, yearMonth);
       res.success(result);

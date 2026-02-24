@@ -14,7 +14,7 @@ class TagGuestController {
 
   static async createTag(req, res) {
     try {
-      const { name, category } = req.body;
+      const { name, category } = req.body || {};
 
       if (!name) {
         return res.error('标签名称不能为空');
@@ -32,7 +32,7 @@ class TagGuestController {
 
   static async createGuest(req, res) {
     try {
-      const { firstName, lastName, idType, idNumber, phone } = req.body;
+      const { firstName, lastName, idType, idNumber, phone } = req.body || {};
       const userId = req.user.id;
 
       if (!firstName || !lastName || !idType || !idNumber) {
@@ -67,7 +67,7 @@ class TagGuestController {
   static async getGuests(req, res) {
     try {
       const userId = req.user.id;
-      const { page, pageSize } = req.body;
+      const { page, pageSize } = req.body || {};
 
       const filters = {};
       if (page) filters.page = parseInt(page);

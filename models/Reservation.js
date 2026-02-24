@@ -56,15 +56,19 @@ class Reservation {
   }
 
   static async findByUserId(userId, filters = {}) {
-    let query = 'SELECT * FROM reservations WHERE user_id = ?';
+    let query = `SELECT r.*, h.name as hotel_name, rm.type as room_type 
+                 FROM reservations r
+                 LEFT JOIN hotels h ON r.hotel_id = h.id
+                 LEFT JOIN rooms rm ON r.room_id = rm.id
+                 WHERE r.user_id = ?`;
     const params = [userId];
 
     if (filters.status) {
-      query += ' AND status = ?';
+      query += ' AND r.status = ?';
       params.push(filters.status);
     }
 
-    query += ' ORDER BY created_at DESC';
+    query += ' ORDER BY r.created_at DESC';
 
     const [rows] = await pool.query(query, params);
     return rows.map(reservation => ({

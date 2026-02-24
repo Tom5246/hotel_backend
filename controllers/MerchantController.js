@@ -8,7 +8,7 @@ const { uploadFile } = require('../config/oss');
 class MerchantController {
   static async createHotel(req, res) {
     try {
-      const { name, address, description, star, openingDate, images, facilityIds, tagIds } = req.body;
+      const { name, address, description, star, openingDate, images, facilityIds, tagIds } = req.body || {};
       const merchantId = req.user.id;
 
       if (!name || !address) {
@@ -82,7 +82,7 @@ class MerchantController {
   static async getMerchantHotels(req, res) {
     try {
       const merchantId = req.user.id;
-      const { status, page, pageSize } = req.body;
+      const { status, page, pageSize } = req.body || {};
 
       const filters = {};
       if (status) filters.status = status;
@@ -150,7 +150,7 @@ class MerchantController {
     try {
       const hotelId = req.params.hotelId;
       const merchantId = req.user.id;
-      const { name, address, description, star, openingDate, images, facilityIds, tagIds } = req.body;
+      const { name, address, description, star, openingDate, images, facilityIds, tagIds } = req.body || {};
 
       const hotel = await Hotel.findById(hotelId);
       if (!hotel) {
@@ -250,7 +250,7 @@ class MerchantController {
     try {
       const hotelId = req.params.hotelId;
       const merchantId = req.user.id;
-      const { type, area, bedType, maxOccupancy, price, totalRooms, images, amenities } = req.body;
+      const { type, area, bedType, maxOccupancy, price, totalRooms, images, amenities } = req.body || {};
 
       const hotel = await Hotel.findById(hotelId);
       if (!hotel) {
@@ -304,7 +304,7 @@ class MerchantController {
     try {
       const roomId = req.params.roomId;
       const merchantId = req.user.id;
-      const { type, area, bedType, maxOccupancy, price, totalRooms, images, amenities } = req.body;
+      const { type, area, bedType, maxOccupancy, price, totalRooms, images, amenities } = req.body || {};
 
       const room = await Room.findById(roomId);
       if (!room) {
@@ -382,7 +382,7 @@ class MerchantController {
     try {
       const hotelId = req.params.hotelId;
       const merchantId = req.user.id;
-      const { page, pageSize } = req.body;
+      const { page, pageSize } = req.body || {};
 
       const hotel = await Hotel.findById(hotelId);
       if (!hotel) {
@@ -411,7 +411,7 @@ class MerchantController {
 
   static async createHotelWithUpload(req, res) {
     try {
-      const { name, address, description, star, openingDate, facilityIds, tagIds } = req.body;
+      const { name, address, description, star, openingDate, facilityIds, tagIds } = req.body || {};
       const merchantId = req.user.id;
 
       if (!name || !address) {
@@ -484,7 +484,7 @@ class MerchantController {
     try {
       const hotelId = req.params.hotelId;
       const merchantId = req.user.id;
-      const { type, area, bedType, maxOccupancy, price, totalRooms, amenities } = req.body;
+      const { type, area, bedType, maxOccupancy, price, totalRooms, amenities } = req.body || {};
 
       const hotel = await Hotel.findById(hotelId);
       if (!hotel) {
