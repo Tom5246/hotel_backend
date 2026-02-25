@@ -90,8 +90,10 @@ class MerchantController {
       if (pageSize) filters.pageSize = parseInt(pageSize);
 
       const result = await Hotel.findByMerchantId(merchantId, filters);
-      
-      const total = result.length;
+      const filters_total = {};
+      if (status) filters_total.status = status;
+      const result_total = await Hotel.findByMerchantId(merchantId, filters_total);
+      const total = result_total.length;
       const currentPage = parseInt(page) || 1;
       const currentPageSize = parseInt(pageSize) || 10;
 
@@ -486,6 +488,19 @@ class MerchantController {
       const merchantId = req.user.id;
       const { type, area, bedType, maxOccupancy, price, totalRooms, amenities } = req.body || {};
 
+      console.log('请求参数:', {
+        hotelId,
+        merchantId,
+        type,
+        area,
+        bedType,
+        maxOccupancy,
+        price,
+        totalRooms,
+        amenities,
+        files: req.files
+      });
+
       const hotel = await Hotel.findById(hotelId);
       if (!hotel) {
         return res.error('酒店不存在', 404);
@@ -502,12 +517,16 @@ class MerchantController {
       // 处理上传的图片
       const images = [];
       if (req.files && req.files.length > 0) {
+        console.log('上传的文件数量:', req.files.length);
         const uploadPromises = req.files.map(async (file, index) => {
+          console.log(`上传文件 ${index + 1}:`, file.originalname);
           const result = await uploadFile(file, 'rooms');
+          console.log(`上传结果 ${index + 1}:`, result);
           images.push(result.url);
           return result;
         });
         await Promise.all(uploadPromises);
+        console.log('最终images数组:', images);
       }
 
       const roomId = await Room.create({
@@ -523,7 +542,11 @@ class MerchantController {
         amenities: amenities || []
       });
 
+      console.log('房间创建成功，ID:', roomId);
+
       const room = await Room.findById(roomId);
+      console.log('从数据库获取的房间信息:', room);
+
       res.success({
         id: room.id,
         hotelId: room.hotel_id,

@@ -28,8 +28,8 @@ class Room {
     } catch (error) {
       console.error('JSON解析失败:', error.message, '原始数据:', jsonString);
       return [];
+    }
   }
-}
 
   static async create(roomData) {
     const { hotel_id, type, area, bed_type, max_occupancy, price, total_rooms, available_rooms, images, amenities } = roomData;

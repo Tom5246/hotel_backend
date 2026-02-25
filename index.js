@@ -6,6 +6,18 @@ const port = 3000;
 const { testConnection } = require('./config/db');
 const responseFormatter = require('./middleware/responseFormatter');
 
+// Swagger UI 配置（可选）
+try {
+  const swaggerUi = require('swagger-ui-express');
+  const swaggerSpec = require('./config/swagger');
+  // Swagger UI 路由
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  console.log('Swagger UI 已启用，访问地址: http://localhost:3000/api-docs');
+} catch (error) {
+  console.log('Swagger UI 依赖未安装，跳过 Swagger 配置');
+  console.log('安装命令: npm install swagger-ui-express swagger-jsdoc');
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(responseFormatter);

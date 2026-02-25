@@ -60,10 +60,16 @@ class Hotel {
       params.push(filters.limit);
     }
 
-    if (filters.offset) {
-      query += ' OFFSET ?';
-      params.push(filters.offset);
+    if (filters.page && filters.pageSize) {
+      const page = filters.page || 1;
+      const pageSize = filters.pageSize || 10;
+      query += ' LIMIT ? OFFSET ?';
+      params.push(pageSize, (page - 1) * pageSize);
     }
+    // if (filters.offset) {
+    //   query += ' OFFSET ?';
+    //   params.push(filters.offset);
+    // }
 
     const [rows] = await pool.query(query, params);
     return rows;
